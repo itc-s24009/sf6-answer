@@ -99,86 +99,78 @@ textarea { background: black; border: 1px solid #444; color: #fff; padding: 15px
 .edit-mini-btn { background: #333; color: white; border: none; padding: 5px 15px; cursor: pointer; }
 .del-mini-btn { background: #600; color: white; border: none; padding: 5px 15px; cursor: pointer; }
 .inverse-option-area { background: #222; padding: 15px; border-radius: 4px; font-size: 0.8rem; }
-/* --- 前回のコードはそのままに、以下を末尾に追加・または該当箇所を上書き --- */
-
-/* 全体のモーダルサイズ調整（スマホで隙間を詰めすぎない） */
-.modal-box.large {
-    width: 95vw;
-    height: 90vh;
-    display: flex;
-    flex-direction: column;
-}
-
-/* 編集画面のレイアウト：デフォルト（PC） */
-.edit-layout {
-    display: flex;
-    gap: 40px;
-    flex: 1;
-    min-height: 0; /* 子要素のスクロールを有効にするために必要 */
-}
-
-/* ★スマホ用の表示（横幅768px以下の場合）★ */
+/* --- スマホ用の表示（横幅768px以下の場合） --- */
 @media (max-width: 768px) {
-    .modal-box {
-        padding: 20px; /* 余白を少し削る */
+    /* モーダル全体の余白を最小限に */
+    .modal-box.large {
+        width: 100vw;
+        height: 100vh;
+        max-height: 100vh;
+        border: none;
+        border-radius: 0;
+        padding: 15px;
     }
 
     .edit-layout {
-        flex-direction: column; /* 左右並びから上下並びに変更 */
-        gap: 20px;
-        overflow-y: auto; /* 全体をスクロール可能にする */
+        flex-direction: column;
+        gap: 15px;
+        overflow-y: auto;
+        /* スクロールを滑らかにする */
+        -webkit-overflow-scrolling: touch; 
     }
 
     .edit-left {
-        flex: none; /* 高さを内容に合わせる */
         width: 100%;
+        flex: none;
     }
 
-    .edit-right {
-        flex: none; /* 高さを内容に合わせる */
-        width: 100%;
-        overflow-y: visible; /* layout全体でスクロールするのでここでは固定しない */
-        padding-right: 0;
-    }
-
-    /* テキストエリアの高さ調整 */
+    /* 文字入力欄：少し高さを抑えて、キャラ一覧が見える領域を確保 */
     textarea {
-        min-height: 120px; /* スマホで見やすい最低限の高さ */
-        height: 150px;
+        height: 100px;
+        font-size: 0.95rem;
     }
 
-    /* キャラのアイコンサイズをスマホ用に少し大きく（タップしやすく） */
+    /* キャラのアイコングリッド：★横に4つ固定★ */
     .mini-chara-grid {
-        grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
-        gap: 8px;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr); /* 4分割 */
+        gap: 6px; /* 隙間を詰めて大きく見せる */
     }
 
-    /* 反対条件エリアのフォント調整 */
+    .mini-card {
+        border-width: 1px; /* スマホでは線を細くしてスッキリ */
+    }
+
+    /* 「反対」エリアもスマホ用にスリム化 */
     .inverse-option-area {
-        margin-top: 10px;
+        padding: 10px;
+        margin-top: 5px;
     }
 
-    /* 保存ボタンをスマホでは目立たせる */
+    .inverse-option-area textarea {
+        height: 70px;
+        margin-top: 8px;
+    }
+
+    /* 保存ボタンを一番下に固定気味にする */
     .confirm-btn {
+        margin-top: auto;
+        padding: 15px;
+        font-size: 1rem;
+        border-radius: 0;
         position: sticky;
         bottom: 0;
-        width: 100%;
-        margin-top: 20px;
-        z-index: 5;
+        z-index: 10;
+        box-shadow: 0 -5px 15px rgba(0,0,0,0.5);
     }
 
-    /* ヘッダーボタン類がスマホで崩れる場合 */
-    .main-header {
-        padding: 15px 20px;
-        flex-direction: column;
-        gap: 15px;
+    /* モーダル上部の配置をコンパクトに */
+    .modal-top {
+        margin-bottom: 15px;
+        padding-bottom: 8px;
     }
-}
 
-/* その他、細かなUI調整 */
-.modal-top h2 {
-    font-size: 1.1rem;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap; /* タイトルが長すぎる場合に1行で切る */
+    .modal-top h2 {
+        font-size: 1rem;
+    }
 }
