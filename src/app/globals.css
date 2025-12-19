@@ -100,77 +100,63 @@ textarea { background: black; border: 1px solid #444; color: #fff; padding: 15px
 .del-mini-btn { background: #600; color: white; border: none; padding: 5px 15px; cursor: pointer; }
 .inverse-option-area { background: #222; padding: 15px; border-radius: 4px; font-size: 0.8rem; }
 /* --- スマホ用の表示（横幅768px以下の場合） --- */
+/* スマホ用（幅768px以下）の設定 */
 @media (max-width: 768px) {
-    /* モーダル全体の余白を最小限に */
+    /* モーダルの中身の余白を少し調整 */
     .modal-box.large {
-        width: 100vw;
-        height: 100vh;
-        max-height: 100vh;
-        border: none;
-        border-radius: 0;
         padding: 15px;
+        width: 98vw; /* 横幅を限界まで使う */
     }
 
     .edit-layout {
         flex-direction: column;
         gap: 15px;
         overflow-y: auto;
-        /* スクロールを滑らかにする */
-        -webkit-overflow-scrolling: touch; 
     }
 
+    /* 文言入力エリア */
     .edit-left {
         width: 100%;
-        flex: none;
     }
 
-    /* 文字入力欄：少し高さを抑えて、キャラ一覧が見える領域を確保 */
     textarea {
-        height: 100px;
-        font-size: 0.95rem;
+        min-height: 100px;
+        font-size: 0.9rem;
     }
 
-    /* キャラのアイコングリッド：★横に4つ固定★ */
+    /* キャラクター選択エリア */
+    .edit-right {
+        width: 100%;
+        padding: 0;
+    }
+
+    /* ★ ここが修正ポイント：横4枚固定 ★ */
     .mini-chara-grid {
         display: grid;
-        grid-template-columns: repeat(4, 1fr); /* 4分割 */
-        gap: 6px; /* 隙間を詰めて大きく見せる */
+        grid-template-columns: repeat(4, 1fr); /* 強制的に横4列にする */
+        gap: 6px; /* 隙間を狭くして4枚入るスペースを確保 */
+        padding-bottom: 100px; /* 保存ボタンに被らないための余白 */
     }
 
+    /* キャラのアイコン自体のサイズ微調整 */
     .mini-card {
-        border-width: 1px; /* スマホでは線を細くしてスッキリ */
+        width: 100%;
+        border-width: 1px; /* スマホでは線を少し細くしてスッキリさせる */
     }
 
-    /* 「反対」エリアもスマホ用にスリム化 */
-    .inverse-option-area {
-        padding: 10px;
-        margin-top: 5px;
-    }
-
-    .inverse-option-area textarea {
-        height: 70px;
-        margin-top: 8px;
-    }
-
-    /* 保存ボタンを一番下に固定気味にする */
+    /* 保存ボタンを画面下に固定（キャラ一覧を見ながら押しやすくする） */
     .confirm-btn {
-        margin-top: auto;
-        padding: 15px;
-        font-size: 1rem;
-        border-radius: 0;
         position: sticky;
         bottom: 0;
+        left: 0;
+        width: 100%;
+        padding: 15px;
         z-index: 10;
-        box-shadow: 0 -5px 15px rgba(0,0,0,0.5);
+        box-shadow: 0 -10px 20px rgba(0, 0, 0, 0.8);
     }
-
-    /* モーダル上部の配置をコンパクトに */
-    .modal-top {
-        margin-bottom: 15px;
-        padding-bottom: 8px;
-    }
-
-    .modal-top h2 {
-        font-size: 1rem;
+    
+    /* 反対条件エリアを少しコンパクトに */
+    .inverse-option-area {
+        padding: 10px;
     }
 }
