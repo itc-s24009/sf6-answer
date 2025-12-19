@@ -16,57 +16,99 @@ export default function Home() {
   const [activeCondition, setActiveCondition] = useState({ id: 'all', text: 'すべてのキャラクター' });
   const [modalType, setModalType] = useState(null);
   const [editingItem, setEditingItem] = useState(null);
-  const [mounted, setMounted] = useState(false); // Hydration Error対策用
+  const [mounted, setMounted] = useState(false);
 
   const [formText, setFormText] = useState('');
   const [isInverseEnabled, setIsInverseEnabled] = useState(false);
   const [inverseText, setInverseText] = useState('');
   const [pickingSet, setPickingSet] = useState(new Set());
 
-  // コンポーネントがブラウザに表示されてから動作を開始させる
-  useEffect(() => {
-    setMounted(true);
-    const saved = localStorage.getItem('sf6_archive');
-    if (saved) setArchiveData(JSON.parse(saved));
-  }, []);
-
-  if (!mounted) return <div style={{background:'#000', height:'100vh'}} />; // 読み込み中は空にする
-
-  const saveArchive = (newData) => {
-    setArchiveData(newData);
-    localStorage.setItem('sf6_archive', JSON.stringify(newData));
+  // 1. APIから条件データを取得する関数
+  const fetchConditions = async () => {
+    try {
+      const res = await fetch('/api/conditions');
+      const data = await res.json();
+      if (!data.error) {
+        setArchiveData(data);
+      }
+    } catch (err) {
+      console.error("データの取得に失敗しました", err);
+    }
   };
 
-  const handleSave = () => {
-    if (!formText || pickingSet.size === 0) return alert("文言とキャラを選択してください");
-    let newData = [...archiveData];
+  useEffect(() => {
+    setMounted(true);
+    fetchConditions(); // 初回起動時にデータベースから読み込み
+  }, []);
 
-    if (editingItem) {
-      const idx = newData.findIndex(a => a.id === editingItem.id);
-      newData[idx] = { id: editingItem.id, text: formText, charas: Array.from(pickingSet) };
-    } else {
-      const mid = 'D' + Date.now();
-      newData.push({ id: mid, text: formText, charas: Array.from(pickingSet) });
-      if (isInverseEnabled && inverseText) {
-        const invC = charaFilenames.filter(f => !pickingSet.has(f));
-        if (invC.length > 0) {
-          newData.push({ id: 'I' + Date.now(), text: inverseText, charas: invC });
-        }
+  if (!mounted) return <div style={{ background: '#000', height: '100vh' }} />;
+
+  // 2. データベースへの保存（新規作成 or 更新）
+  const handleSave = async () => {
+    if (!formText || pickingSet.size === 0) return alert("文言とキャラを選択してください");
+
+    try {
+      const body = {
+        text: formText,
+        charas: Array.from(pickingSet),
+        isInverseEnabled,
+        inverseText,
+        allCharas: charaFilenames
+      };
+
+      if (editingItem) {
+        // 編集・更新の場合
+        await fetch(`/api/conditions/${editingItem.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        });
+      } else {
+        // 新規作成の場合
+        await fetch('/api/conditions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        });
       }
+
+      await fetchConditions(); // 保存後にリストを再読み込み
+      setModalType(null);
+    } catch (err) {
+      alert("保存に失敗しました。データベースの接続を確認してください。");
     }
-    saveArchive(newData);
-    setModalType(null);
+  };
+
+  // 3. データベースからの消去
+  const deleteItem = async (id) => {
+    if (!confirm('データベースからこの条件を永久に消去しますか？')) return;
+
+    try {
+      await fetch(`/api/conditions/${id}`, {
+        method: 'DELETE',
+      });
+      await fetchConditions(); // 消去後にリストを再読み込み
+    } catch (err) {
+      alert("消去に失敗しました。");
+    }
   };
 
   return (
     <div className="wrapper">
       <header className="main-header">
-        <div className="logo">ANSWERS <span className="version">NEXT.JS</span></div>
+        <div className="logo">ANSWERS <span className="version">POSTGRES</span></div>
         <div className="btn-group">
           <button className="header-btn select-mode" onClick={() => setModalType('select')}>
             <span className="material-symbols-outlined">segment</span>条件を選ぶ
           </button>
-          <button className="header-btn add-mode" onClick={() => { setEditingItem(null); setFormText(''); setPickingSet(new Set()); setModalType('form'); }}>
+          <button className="header-btn add-mode" onClick={() => {
+            setEditingItem(null);
+            setFormText('');
+            setIsInverseEnabled(false);
+            setInverseText('');
+            setPickingSet(new Set());
+            setModalType('form');
+          }}>
             <span className="material-symbols-outlined">add</span>
           </button>
         </div>
@@ -81,38 +123,50 @@ export default function Home() {
 
       <main className="gallery-container">
         <div className="character-grid">
-          {charaFilenames.map(file => (
-            <div 
-              key={file} 
-              className={`card ${activeCondition.id !== 'all' && activeCondition.charas?.includes(file) ? 'matched' : ''}`}
-            >
-              <img src={`/sf6/${file}`} alt="" />
-            </div>
-          ))}
+          {charaFilenames.map(file => {
+            // 現在のフィルターに含まれているかチェック
+            const isMatched = activeCondition.id !== 'all' && activeCondition.charas?.includes(file);
+            return (
+              <div key={file} className={`card ${isMatched ? 'matched' : ''}`}>
+                <img src={`/sf6/${file}`} alt="" />
+              </div>
+            );
+          })}
         </div>
       </main>
 
-      {/* ポップアップ：アーカイブ */}
+      {/* アーカイブポップアップ */}
       {modalType === 'select' && (
         <div className="modal-overlay">
           <div className="modal-box">
             <div className="modal-top">
-              <h2>ARCHIVE</h2>
+              <h2>DATABASE ARCHIVE</h2>
               <button className="modal-close" onClick={() => setModalType(null)}>
                 <span className="material-symbols-outlined">close</span>
               </button>
             </div>
             <div className="archive-list">
-              <button className="archive-main-btn" onClick={() => { setActiveCondition({id: 'all', text: 'すべてのキャラクター'}); setModalType(null); }}>
-                全キャラクターを表示
+              <button className="archive-main-btn" onClick={() => {
+                setActiveCondition({ id: 'all', text: 'すべてのキャラクター' });
+                setModalType(null);
+              }}>
+                【表示リセット】全キャラ表示
               </button>
               {archiveData.map(item => (
                 <div key={item.id} className="archive-btn-wrap">
-                  <button className="archive-main-btn" onClick={() => { setActiveCondition(item); setModalType(null); }}>
+                  <button className="archive-main-btn" onClick={() => {
+                    setActiveCondition(item);
+                    setModalType(null);
+                  }}>
                     {item.text}
                   </button>
-                  <button className="edit-mini-btn" onClick={() => { setEditingItem(item); setFormText(item.text); setPickingSet(new Set(item.charas)); setModalType('form'); }}>編集</button>
-                  <button className="del-mini-btn" onClick={() => { if(confirm('消去しますか？')) saveArchive(archiveData.filter(a=>a.id!==item.id)); }}>消去</button>
+                  <button className="edit-mini-btn" onClick={() => {
+                    setEditingItem(item);
+                    setFormText(item.text);
+                    setPickingSet(new Set(item.charas));
+                    setModalType('form');
+                  }}>編集</button>
+                  <button className="del-mini-btn" onClick={() => deleteItem(item.id)}>消去</button>
                 </div>
               ))}
             </div>
@@ -120,33 +174,55 @@ export default function Home() {
         </div>
       )}
 
-      {/* ポップアップ：作成・編集 */}
+      {/* 作成・編集ポップアップ */}
       {modalType === 'form' && (
         <div className="modal-overlay">
           <div className="modal-box large">
             <div className="modal-top">
-              <h2>{editingItem ? 'EDIT' : 'CREATE'}</h2>
+              <h2>{editingItem ? 'EDIT CONDITION' : 'CREATE CONDITION'}</h2>
               <button className="modal-close" onClick={() => setModalType(null)}>
                 <span className="material-symbols-outlined">close</span>
               </button>
             </div>
             <div className="edit-layout">
               <div className="edit-left">
-                <textarea value={formText} onChange={e=>setFormText(e.target.value)} placeholder="条件内容を入力..." />
+                <textarea 
+                  value={formText} 
+                  onChange={e => setFormText(e.target.value)} 
+                  placeholder="ここに条件を記入（例：リーチが長く牽制が強い）" 
+                />
                 {!editingItem && (
                   <div className="inverse-option-area">
-                    <label style={{cursor:'pointer'}}>
-                      <input type="checkbox" checked={isInverseEnabled} onChange={e=>setIsInverseEnabled(e.target.checked)} /> 「反対」も同時に作成
+                    <label style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <input type="checkbox" checked={isInverseEnabled} onChange={e => setIsInverseEnabled(e.target.checked)} /> 
+                      <span>「反対」の条件（選ばなかったキャラ用）も同時に作る</span>
                     </label>
-                    {isInverseEnabled && <textarea value={inverseText} onChange={e=>setInverseText(e.target.value)} placeholder="反対の条件文..." style={{marginTop:10}}/>}
+                    {isInverseEnabled && (
+                      <textarea 
+                        value={inverseText} 
+                        onChange={e => setInverseText(e.target.value)} 
+                        placeholder="反対の条件文を記入（例：近接戦がメインで牽制は弱め）" 
+                        style={{ marginTop: 10, minHeight: '80px' }}
+                      />
+                    )}
                   </div>
                 )}
-                <button className="confirm-btn" onClick={handleSave}>保存して完了</button>
+                <button className="confirm-btn" onClick={handleSave}>
+                  {editingItem ? '更新を保存する' : 'データベースに保存して完了'}
+                </button>
               </div>
               <div className="edit-right">
                 <div className="mini-chara-grid">
                   {charaFilenames.map(f => (
-                    <div key={f} className={`mini-card ${pickingSet.has(f) ? 'active' : ''}`} onClick={()=>{const n=new Set(pickingSet); n.has(f)?n.delete(f):n.add(f); setPickingSet(n);}}>
+                    <div 
+                      key={f} 
+                      className={`mini-card ${pickingSet.has(f) ? 'active' : ''}`} 
+                      onClick={() => {
+                        const n = new Set(pickingSet);
+                        n.has(f) ? n.delete(f) : n.add(f);
+                        setPickingSet(n);
+                      }}
+                    >
                       <img src={`/sf6/${f}`} alt="" />
                     </div>
                   ))}
