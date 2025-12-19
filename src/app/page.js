@@ -80,18 +80,19 @@ export default function Home() {
   };
 
   // 3. データベースからの消去
-  const deleteItem = async (id) => {
-    if (!confirm('データベースからこの条件を永久に消去しますか？')) return;
+const deleteItem = async (id) => {
+  if (!confirm('本当に消去しますか？')) return;
 
-    try {
-      await fetch(`/api/conditions/${id}`, {
-        method: 'DELETE',
-      });
-      await fetchConditions(); // 消去後にリストを再読み込み
-    } catch (err) {
-      alert("消去に失敗しました。");
-    }
-  };
+  try {
+    // URLの最後に ?id=ID番号 をつけて送る！
+    await fetch(`/api/conditions?id=${id}`, {
+      method: 'DELETE',
+    });
+    await fetchConditions();
+  } catch (err) {
+    alert("消去できませんでした");
+  }
+};
 
   return (
     <div className="wrapper">
