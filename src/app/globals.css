@@ -99,3 +99,86 @@ textarea { background: black; border: 1px solid #444; color: #fff; padding: 15px
 .edit-mini-btn { background: #333; color: white; border: none; padding: 5px 15px; cursor: pointer; }
 .del-mini-btn { background: #600; color: white; border: none; padding: 5px 15px; cursor: pointer; }
 .inverse-option-area { background: #222; padding: 15px; border-radius: 4px; font-size: 0.8rem; }
+/* --- 前回のコードはそのままに、以下を末尾に追加・または該当箇所を上書き --- */
+
+/* 全体のモーダルサイズ調整（スマホで隙間を詰めすぎない） */
+.modal-box.large {
+    width: 95vw;
+    height: 90vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* 編集画面のレイアウト：デフォルト（PC） */
+.edit-layout {
+    display: flex;
+    gap: 40px;
+    flex: 1;
+    min-height: 0; /* 子要素のスクロールを有効にするために必要 */
+}
+
+/* ★スマホ用の表示（横幅768px以下の場合）★ */
+@media (max-width: 768px) {
+    .modal-box {
+        padding: 20px; /* 余白を少し削る */
+    }
+
+    .edit-layout {
+        flex-direction: column; /* 左右並びから上下並びに変更 */
+        gap: 20px;
+        overflow-y: auto; /* 全体をスクロール可能にする */
+    }
+
+    .edit-left {
+        flex: none; /* 高さを内容に合わせる */
+        width: 100%;
+    }
+
+    .edit-right {
+        flex: none; /* 高さを内容に合わせる */
+        width: 100%;
+        overflow-y: visible; /* layout全体でスクロールするのでここでは固定しない */
+        padding-right: 0;
+    }
+
+    /* テキストエリアの高さ調整 */
+    textarea {
+        min-height: 120px; /* スマホで見やすい最低限の高さ */
+        height: 150px;
+    }
+
+    /* キャラのアイコンサイズをスマホ用に少し大きく（タップしやすく） */
+    .mini-chara-grid {
+        grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+        gap: 8px;
+    }
+
+    /* 反対条件エリアのフォント調整 */
+    .inverse-option-area {
+        margin-top: 10px;
+    }
+
+    /* 保存ボタンをスマホでは目立たせる */
+    .confirm-btn {
+        position: sticky;
+        bottom: 0;
+        width: 100%;
+        margin-top: 20px;
+        z-index: 5;
+    }
+
+    /* ヘッダーボタン類がスマホで崩れる場合 */
+    .main-header {
+        padding: 15px 20px;
+        flex-direction: column;
+        gap: 15px;
+    }
+}
+
+/* その他、細かなUI調整 */
+.modal-top h2 {
+    font-size: 1.1rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap; /* タイトルが長すぎる場合に1行で切る */
+}
