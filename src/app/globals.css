@@ -1,6 +1,6 @@
 /* src/app/globals.css */
 
-/* --- 全体リセット --- */
+/* --- 全てをリセット --- */
 * { 
     box-sizing: border-box; 
     margin: 0; padding: 0;
@@ -9,133 +9,133 @@
 
 html, body {
     background-color: #000;
-    color: white;
+    color: #fff;
     font-family: sans-serif;
     min-height: 100vh;
 }
 
 :root {
     --accent: #00e5ff;
-    --card-overlap: 20%;
 }
 
-/* --- ヘッダー・メイン画面（PC用） --- */
-.main-header { padding: 20px 40px; display: flex; justify-content: space-between; border-bottom: 1px solid #333; }
-.logo { font-size: 1.2rem; font-weight: 900; }
-.version { color: var(--accent); font-size: 0.7rem; border: 1px solid var(--accent); padding: 2px; }
-.header-btn { padding: 10px 20px; border: none; cursor: pointer; display: flex; align-items: center; }
-.select-mode { background: var(--accent); font-weight: 900; }
-.add-mode { background: #333; border-radius: 50%; width: 40px; height: 40px; margin-left: 10px; display: flex; justify-content: center; align-items: center; color: white;}
+/* --- メイン画面ヘッダー等 --- */
+.main-header { padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; }
+.logo { font-size: 1.2rem; font-weight: bold; }
+.accent { color: var(--accent); }
+.header-btn { padding: 8px 15px; border: none; cursor: pointer; }
+.select-mode { background: var(--accent); font-weight: bold; }
+.add-mode { background: #333; color: #fff; border-radius: 50%; width: 40px; height: 40px; display: flex; justify-content: center; align-items: center; margin-left: 10px; }
 
-.condition-billboard { background: #111; padding: 60px 20px; text-align: center; }
-#activeCondition { font-size: 2rem; font-weight: 100; margin-top: 10px; }
+.condition-billboard { background: #111; padding: 40px 20px; text-align: center; }
+#activeCondition { font-size: 1.5rem; margin-top: 10px; font-weight: 300; line-height: 1.4; }
 
-.gallery-container { padding: 20px; }
+/* メインの8枚グリッド */
+.gallery-container { padding: 10px; }
 .character-grid {
     display: grid;
     grid-template-columns: repeat(8, 1fr);
-    gap: 10px;
+    gap: 8px;
 }
-/* タブレット・デスクトップ中間対応 */
-@media (max-width: 1000px) { .character-grid { grid-template-columns: repeat(4, 1fr); } }
+@media (max-width: 1000px) { .character-grid { grid-template-columns: repeat(6, 1fr); } }
+@media (max-width: 600px) { .character-grid { grid-template-columns: repeat(4, 1fr); } }
 
 .card {
     aspect-ratio: 1 / 1.5; background: #111; overflow: hidden;
-    clip-path: polygon(var(--card-overlap) 0, 100% 0, calc(100% - var(--card-overlap)) 100%, 0 100%);
+    clip-path: polygon(15% 0, 100% 0, 85% 100%, 0 100%);
     filter: brightness(0.2) grayscale(1);
 }
-.card.matched { filter: brightness(1.2) grayscale(0); border: 1px solid var(--accent); transform: scale(1.05); z-index: 2;}
+.card.matched { filter: brightness(1.2) grayscale(0); border: 1px solid var(--accent); transform: scale(1.05); z-index: 2; }
 .card img { width: 140%; height: 100%; object-fit: cover; margin-left: -20%; }
 
-/* --- モーダル基本（PC用） --- */
-.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 1000; display: flex; justify-content: center; align-items: center; }
-.modal-box { background: #1a1a1a; width: 600px; padding: 30px; border-top: 4px solid var(--accent); border-radius: 4px; }
-.modal-box.large { width: 95vw; height: 90vh; display: flex; flex-direction: column; }
-.modal-top { display: flex; justify-content: space-between; border-bottom: 1px solid #333; margin-bottom: 20px; padding-bottom: 10px;}
-.modal-close { background: none; border: none; color: white; cursor: pointer; }
+/* --- モーダル (ポップアップ) 修正の要 --- */
+.modal-overlay { 
+    position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000; 
+    display: flex; justify-content: center; align-items: center; 
+}
+.modal-box.large { 
+    background: #151515; width: 95vw; height: 95vh; display: flex; flex-direction: column; 
+    border-top: 4px solid var(--accent); padding: 20px;
+}
+.modal-top { display: flex; justify-content: space-between; border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 15px; }
+.modal-close { background: none; border: none; color: #fff; cursor: pointer; font-size: 24px; }
 
-.edit-layout { display: flex; gap: 30px; flex: 1; overflow: hidden; }
+.edit-layout { display: flex; gap: 20px; flex: 1; overflow: hidden; }
 .edit-left { flex: 1; display: flex; flex-direction: column; gap: 10px; }
-textarea { background: black; color: white; border: 1px solid #444; padding: 15px; flex: 1; resize: none; font-size: 1rem; }
-.confirm-btn { background: var(--accent); font-weight: 900; border: none; padding: 15px; cursor: pointer; }
+textarea { background: #000; color: #fff; border: 1px solid #444; padding: 12px; font-size: 16px; flex: 1; resize: none; }
+.confirm-btn { background: var(--accent); color: #000; font-weight: bold; border: none; padding: 15px; cursor: pointer; }
 
+/* PCのキャラ選択用（幅に余裕があるとき） */
 .edit-right { flex: 1.5; overflow-y: auto; }
-.mini-chara-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 8px; }
-.mini-card { border: 2px solid #333; opacity: 0.3; cursor: pointer; aspect-ratio: 1/1; overflow: hidden; }
+.mini-chara-grid { 
+    display: grid; 
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); 
+    gap: 8px; 
+}
+.mini-card { border: 2px solid #333; opacity: 0.3; aspect-ratio: 1/1; overflow: hidden; }
 .mini-card.active { border-color: var(--accent); opacity: 1; }
 .mini-card img { width: 100%; height: 100%; object-fit: cover; }
 
-.archive-list { display: flex; flex-direction: column; gap: 10px; overflow-y: auto; }
-.archive-btn-wrap { display: flex; gap: 5px; }
-.archive-main-btn { flex: 1; background: black; color: white; border: 1px solid #444; text-align: left; padding: 15px; border-left: 5px solid var(--accent); cursor: pointer;}
-.edit-mini-btn { background: #333; color: white; border: none; padding: 5px 10px; cursor: pointer; }
-.del-mini-btn { background: #600; color: white; border: none; padding: 5px 10px; cursor: pointer; }
-.inverse-option-area { background: #222; padding: 15px; border-radius: 4px; font-size: 0.8rem; }
+.archive-list { display: flex; flex-direction: column; gap: 8px; overflow-y: auto; }
+.archive-btn-wrap { display: flex; gap: 4px; }
+.archive-main-btn { flex: 1; background: #000; color: #fff; border: 1px solid #333; text-align: left; padding: 15px; border-left: 4px solid var(--accent); }
+.edit-mini-btn, .del-mini-btn { padding: 5px 10px; border: none; color: #fff; font-size: 12px; }
+.edit-mini-btn { background: #333; } .del-mini-btn { background: #600; }
+.inverse-option-area { background: #222; padding: 10px; border-radius: 4px; font-size: 12px; }
 
-/* -------------------------------------------
-   ★ ここが本気のスマホ用強制 4列設定 ★
-------------------------------------------- */
-@media (max-width: 600px) {
-    /* 画面端の余白を極限まで削る */
+
+/* ===========================================
+   ★ スマートフォン・最優先4列化ロジック ★
+   =========================================== */
+@media (max-width: 500px) {
+    /* モーダルの余白を限界まで殺す */
     .modal-box.large {
-        width: 100% !important;
-        height: 100% !important;
-        max-height: 100% !important;
-        padding: 10px !important; /* 横の余白を狭める */
-        border: none !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        padding: 8px !important; /* 横の余白を8pxまで削減 */
+        border-radius: 0;
     }
 
+    /* 左右の並びを上下にし、全スクロールを許可 */
     .edit-layout {
         flex-direction: column !important;
-        overflow-y: auto !important; /* 子要素ではなく、この階層でスクロール */
-        gap: 20px !important;
+        overflow-y: scroll !important;
+        gap: 15px !important;
     }
 
+    /* スクロールをスムーズに */
     .edit-left, .edit-right {
         width: 100% !important;
-        overflow: visible !important; /* スクロール機能を親に任せる */
+        overflow: visible !important;
         flex: none !important;
     }
 
-    /* 文字入力の最低高さを確保 */
-    textarea {
-        height: 120px !important;
-        flex: none !important;
-    }
+    /* 入力エリアを縮める */
+    textarea { height: 100px !important; flex: none !important; }
 
-    /* 【4列強制】の計算式 */
+    /* 【解決の鍵】数学的4列強制設定 */
     .mini-chara-grid {
         display: grid !important;
-        /* 余白とボーダーを考慮した正確な4分割 */
-        grid-template-columns: repeat(4, 1fr) !important;
-        gap: 4px !important; /* 隙間を極限まで詰める */
-        margin: 0 !important;
-        padding: 0 0 100px 0 !important; /* 保存ボタンのための底上げ */
+        /* auto-fillではなく、「固定の4等分」にする */
+        grid-template-columns: repeat(4, minmax(0, 1fr)) !important; 
+        gap: 4px !important;
+        padding-bottom: 80px !important;
     }
 
     .mini-card {
-        border-width: 1px !important; /* 境界線を細くする */
         width: 100% !important;
-        min-width: 0 !important; /* ブラウザが幅を自動拡張するのを禁止 */
+        min-width: 0 !important; /* ブラウザによる最小幅の維持を禁止 */
+        border-width: 1px !important; /* 太い枠はスペースを取るので細くする */
     }
 
-    .mini-card img {
-        width: 100% !important;
-        height: 100% !important;
-    }
-
-    /* 保存ボタンのモバイル最適化 */
+    /* 保存ボタンを下に固定し、指に近くする */
     .confirm-btn {
         position: sticky !important;
         bottom: 0 !important;
-        margin: 10px -10px -10px -10px !important; /* 親のpadding外側まで広げる */
-        width: calc(100% + 20px) !important;
-        border-radius: 0 !important;
-        z-index: 100 !important;
+        margin-left: -8px !important;
+        margin-right: -8px !important;
+        margin-top: 10px;
+        width: calc(100% + 16px) !important;
+        z-index: 100;
+        padding: 18px !important;
     }
-
-    /* その他ヘッダー崩れ修正 */
-    .main-header { flex-direction: column; padding: 10px; }
-    .header-btn { width: 100%; justify-content: center; }
-    .character-grid { grid-template-columns: repeat(2, 1fr); gap: 5px; } /* メイン画面も2列に */
 }
