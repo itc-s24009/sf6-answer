@@ -44,41 +44,41 @@ export default function Home() {
   if (!mounted) return <div style={{ background: '#000', height: '100vh' }} />;
 
   // 2. データベースへの保存（新規作成 or 更新）
-  const handleSave = async () => {
-    if (!formText || pickingSet.size === 0) return alert("文言とキャラを選択してください");
+// --- src/app/page.js 内の handleSave 関数を修正 ---
+const handleSave = async () => {
+  if (!formText || pickingSet.size === 0) return alert("文言とキャラを選択してください");
 
-    try {
-      const body = {
-        text: formText,
-        charas: Array.from(pickingSet),
-        isInverseEnabled,
-        inverseText,
-        allCharas: charaFilenames
-      };
+  try {
+    const body = {
+      text: formText,
+      charas: Array.from(pickingSet),
+      isInverseEnabled,
+      inverseText,
+      allCharas: charaFilenames
+    };
 
-      if (editingItem) {
-        // 編集・更新の場合
-        await fetch(`/api/conditions/${editingItem.id}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(body),
-        });
-      } else {
-        // 新規作成の場合
-        await fetch('/api/conditions', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(body),
-        });
-      }
-
-      await fetchConditions(); // 保存後にリストを再読み込み
-      setModalType(null);
-    } catch (err) {
-      alert("保存に失敗しました。データベースの接続を確認してください。");
+    if (editingItem) {
+      // 【ここを修正】 URLの書き方を ?id= の形にする
+      await fetch(`/api/conditions?id=${editingItem.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+    } else {
+      // 新規作成時（変更なし）
+      await fetch('/api/conditions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
     }
-  };
 
+    await fetchConditions(); // データの再読み込み
+    setModalType(null);
+  } catch (err) {
+    alert("通信エラーが発生しました");
+  }
+};
   // 3. データベースからの消去
 const deleteItem = async (id) => {
   if (!confirm('本当に消去しますか？')) return;
