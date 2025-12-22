@@ -15,3 +15,14 @@ model Condition {
   charas    String[]
   createdAt DateTime @default(now())
 }
+
+// お気に入り情報を保存するモデル
+model Favorite {
+  id          String   @id @default(cuid())
+  conditionId String
+  charaName   String
+  createdAt   DateTime @default(now())
+
+  // 同じキャラが同じ条件を二重にお気に入りできないように制限
+  @@unique([conditionId, charaName])
+}

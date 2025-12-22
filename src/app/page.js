@@ -1,5 +1,5 @@
 'use client';
-
+import Link from 'next/link';
 import { useState, useEffect } from 'react';
 
 const charaFilenames = [
@@ -8,7 +8,7 @@ const charaFilenames = [
   'c.viper.png', 'ed.png', 'juri.png', 'mai.png', 'vega.png',
   'cammy.png', 'elena.png', 'ken.png', 'manon.png', 'zangief.png',
   'chun-li.png', 'gouki.png', 'kimberly.png', 'marisa.png',
-  'dee jay.png', 'guile.png', 'rashid.png', 'ryu.png'
+  'dee_jay.png', 'guile.png', 'rashid.png', 'ryu.png'
 ];
 
 export default function Home() {
@@ -123,18 +123,19 @@ const deleteItem = async (id) => {
       </div>
 
       <main className="gallery-container">
-        <div className="character-grid">
-          {charaFilenames.map(file => {
-            // 現在のフィルターに含まれているかチェック
-            const isMatched = activeCondition.id !== 'all' && activeCondition.charas?.includes(file);
-            return (
-              <div key={file} className={`card ${isMatched ? 'matched' : ''}`}>
-                <img src={`/sf6/${file}`} alt="" />
-              </div>
-            );
-          })}
-        </div>
-      </main>
+  <div className="character-grid">
+    {charaFilenames.map(file => {
+      const isMatched = activeCondition.id !== 'all' && activeCondition.charas?.includes(file);
+      return (
+        /* カードをLinkで囲む（/character/ryu.png のようになる） */
+        <Link key={file} href={`/character/${file}`} className={`card ${isMatched ? 'matched' : ''}`}>
+          <img src={`/sf6/${file}`} alt="" />
+        </Link>
+      );
+    })}
+  </div>
+</main>
+
 
       {/* アーカイブポップアップ */}
       {modalType === 'select' && (

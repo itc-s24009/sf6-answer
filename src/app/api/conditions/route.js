@@ -1,10 +1,22 @@
 import { NextResponse } from 'next/server';
-import prisma from '@/lib/prisma'; // フォルダ名に合わせて lib または libs に修正してね
+import prisma from '../../../lib/prisma'; // フォルダ名に合わせて lib または libs に修正してね
 
 export async function GET() {
-  const data = await prisma.condition.findMany({ orderBy: { createdAt: 'desc' } });
-  return NextResponse.json(data);
+  try {
+    const data = await prisma.condition.findMany({ 
+      orderBy: { createdAt: 'desc' } 
+    });
+
+    // 取得したデータが何であれ、必ずJSONとして返す
+    return NextResponse.json(data || []); 
+
+  } catch (err) {
+    console.error("API GET ERROR:", err);
+    // 空っぽを返さず、必ずJSONでエラー内容を返すようにする
+    return NextResponse.json({ error: err.message, stack: err.stack }, { status: 500 });
+  }
 }
+
 
 export async function POST(req) {
   const { text, charas, isInverseEnabled, inverseText, allCharas } = await req.json();

@@ -139,3 +139,35 @@ textarea { background: #000; color: #fff; border: 1px solid #444; padding: 12px;
         padding: 18px !important;
     }
 }
+
+
+/* src/app/globals.css に追加 */
+
+/* カードをクリックできる感があるポインターに変更 */
+.character-grid .card {
+    cursor: pointer;
+    text-decoration: none;
+}
+
+/* 詳細ページのレイアウト用 */
+.archive-list p {
+    font-size: 0.9rem;
+    padding: 10px;
+    background: #111;
+    border-radius: 4px;
+}
+
+/* globals.css に追記 */
+
+/* お気に入りした時のボタンの装飾 */
+.archive-main-btn.fav-active {
+    border-color: var(--accent);
+    background: linear-gradient(90deg, #111, rgba(0, 229, 255, 0.15));
+    border-left: 6px solid var(--accent);
+    box-shadow: 0 0 15px rgba(0, 229, 255, 0.1);
+}
+
+/* ☆ボタンを光らせる（お気に入り時） */
+.archive-main-btn.fav-active button {
+    text-shadow: 0 0 10px var(--accent);
+}
