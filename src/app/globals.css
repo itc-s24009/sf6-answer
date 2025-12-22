@@ -41,7 +41,7 @@ html, body {
 
 .card {
     aspect-ratio: 1 / 1.5; background: #111; overflow: hidden;
-    clip-path: polygon(15% 0, 100% 0, 85% 100%, 0 100%);
+    clip-path: polygon(40% 0, 100% 0, 55% 100%, 0 100%);
     filter: brightness(0.2) grayscale(1);
 }
 .card.matched { filter: brightness(1.2) grayscale(0); border: 1px solid var(--accent); transform: scale(1.05); z-index: 2; }
